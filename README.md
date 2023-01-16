@@ -4,7 +4,14 @@ Basic logging example with a EFK stack on a multinode (Docker based) minikube cl
 Based on the [Digital ocean tutorial](https://www.digitalocean.com/community/tutorials/how-to-set-up-an-elasticsearch-fluentd-and-kibana-efk-logging-stack-on-kubernetes) and adapted for a multinode minikube cluster.
 
 ## Setup overview
-The ElasticSearch cluster is defined as a StatefulSet, Fluentd is a DaemonSet (thus the requirement of this setup to have role-based access control enabled), Kibana as Deployment and Service and additionally we'll have a simple counter app in a Pod.
+The ElasticSearch cluster is defined as a StatefulSet, Kibana as Deployment and Service and additionally we'll have a simple counter app in a Pod.
+There are two different approaches on how to handle logging with fluentd:
+
+### Cluster-level logging with Fluentd as Daemonset
+Fluentd is defined as a DaemonSet (thus the requirement of this setup to have role-based access control enabled) with a logging agent on every node which fetches container stdout and stderr and writes it to a single Elastic index.
+
+### Application logging with Fluentd as sidecar
+Logs are separated per application and written to app-specific Elastic indices. Each app Pod therefore needs to come with a dedicated fluentd sidecar container which fetches the log file from a shared mounted dir and writes it to the Elastic index.
 
 ## Usage
 ```bash
