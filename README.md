@@ -52,15 +52,23 @@ Once it's rolled out, get Kibana pod name and forward local port to pod to acces
 kubectl port-forward kibana-pod-name 5601:5601 --namespace=kube-logging
 ```
 
+### For cluster wide logging setup with Fluentd DaemonSet:
+
 Create Fluentd DaemonSet:
 ```bash
-kubectl create -f fluentd.yaml
+kubectl create -f fluentd-deamonset.yaml
 ```
-Open Kibana at http://localhost:5601 and create new index with `logstash-*` wildcard pattern, time filter by `@timestamp` field and
+Open Kibana at http://localhost:5601 and create new index pattern with `logstash-*` wildcard pattern, time filter by `@timestamp` field and
 all the logs of the cluster should be available through the Discover UI.
 
-Finally deploy a simple counter Pod: 
+### For separated app logging with Fluentd sidecar container:
+Create Fluentd ConfigMap:
 ```bash
-kubectl create -f counter.yaml
+kubectl create -f fluentd-sidecar-configmap-counter-app.yaml
 ```
-..and check for it's log stream in Kibana.
+
+Deploy the simple counter app along with fluentd sidecar container with dedicated logging agent: 
+```bash
+kubectl create -f counter-app-w-fluentd-sidecar.yaml
+```
+Open Kibana at http://localhost:5601 and create new index pattern named after your `DOMAIN_UID` env var in counter-app-w-fluentd-sidecar.yaml
