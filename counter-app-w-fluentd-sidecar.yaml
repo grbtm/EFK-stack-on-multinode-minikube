@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: counter
+spec:
+  containers:
+  - name: count
+    image: busybox:1.28
+    args: 
+    - /bin/sh
+    - -c
+    - >
+      i=0;
+      while true;
+      do
+        echo "$i: $(date)" >> /var/log/1.log;
+        i=$((i+1));
+        sleep 60;
+      done  
+    volumeMounts:
+    - name: varlog
+      mountPath: /var/log
+  - name: count-agent
+    image: "docker.io/internetwatermelonsurfer/fluentd-es-plugin:v2"
+    env:
+    - name:  ELASTICSEARCH_HOST
+      value: "elasticsearch.kube-logging.svc.cluster.local"
+    - name:  ELASTICSEARCH_PORT
+      value: "9200"
+    - name:  DOMAIN_UID
+      value: "counter-tail"
+    volumeMounts:
+    - name: varlog
+      mountPath: /var/log
+    - name: config-volume
+      mountPath: /etc/fluent
+  volumes:
+  - name: varlog
+    emptyDir: {}
+  - name: config-volume
+    configMap:
+      name: fluentd-config-counter-app
+
