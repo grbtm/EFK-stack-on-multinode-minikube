@@ -12,6 +12,7 @@ Fluentd is defined as a DaemonSet (thus the requirement of this setup to have ro
 
 ### Application logging with Fluentd as sidecar
 Logs are separated per application and written to app-specific Elastic indices. Each app Pod therefore needs to come with a dedicated fluentd sidecar container which fetches the log file from a shared mounted dir and writes it to the Elastic index.
+(The used fluentd image with elasticsearch plugin installed is pulled from https://hub.docker.com/r/internetwatermelonsurfer/fluentd-es-plugin and based on https://github.com/grbtm/fluentd-with-elastic-plugin)
 
 ## Usage
 ```bash
