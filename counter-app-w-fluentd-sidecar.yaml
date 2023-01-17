@@ -22,6 +22,9 @@ spec:
       mountPath: /var/log
   - name: count-agent
     image: "docker.io/internetwatermelonsurfer/fluentd-es-plugin:v2"
+    args: 
+    - -c 
+    - /etc/fluent/fluent.conf 
     env:
     - name:  ELASTICSEARCH_HOST
       value: "elasticsearch.kube-logging.svc.cluster.local"
